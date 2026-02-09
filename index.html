@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mean Meno</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .date-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .date-selector input {
+            padding: 10px 15px;
+            border: 2px solid white;
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .date-selector input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .meal-entry {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .meal-entry h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .reaction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .reaction-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .reaction-item label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .intensity-scale {
+            display: flex;
+            gap: 5px;
+        }
+
+        .intensity-btn {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .intensity-btn:hover {
+            border-color: #667eea;
+        }
+
+        .intensity-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-item:hover {
+            background: #f0f0f0;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item.checked {
+            background: #e8eaf6;
+            border: 2px solid #667eea;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .counter-btn:hover {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .counter-value {
+            font-size: 1.5em;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 30px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .notes-area {
+            margin-top: 15px;
+        }
+
+        .notes-area textarea {
+            min-height: 60px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            padding: 20px 30px 0 30px;
+            background: white;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: #f8f9fa;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #f8f9fa;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-btn:hover {
+            background: #e8eaf6;
+        }
+
+        .export-section {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .export-btn {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .export-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌸 Mean Meno</h1>
+            <p style="font-size: 0.9em; opacity: 0.9; margin-top: 5px;">Dein persönlicher Wechseljahre-Begleiter</p>
+            <div class="date-selector">
+                <label style="font-size: 1.1em;">Datum:</label>
+                <input type="date" id="dateInput" value="">
+                <button onclick="openReminderSettings()" style="padding: 10px 20px; background: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 10px; color: white; cursor: pointer; font-size: 1em;">
+                    🔔 Erinnerung
+                </button>
+            </div>
+        </div>
+
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="showTab('daily')">Tägliches Tracking</button>
+            <button class="tab-btn" onclick="showTab('analysis')">Analyse & Muster</button>
+            <button class="tab-btn" onclick="showTab('export')">Export</button>
+            <button class="tab-btn" onclick="showTab('info')">Wechseljahre-Info</button>
+        </div>
+
+        <div class="content" id="dailyTab">
+            <!-- ESSEN & VERDAUUNG -->
+            <div class="section">
+                <h2>🍽️ Essen & Verdauung</h2>
+                
+                <div class="meal-entry">
+                    <h3>Frühstück</h3>
+                    <textarea placeholder="z.B. 4 EL Haferflocken, 4 EL Quark, 1 Banane"></textarea>
+                    
+                    <div class="reaction-grid">
+                        <div class="reaction-item">
+                            <label>Blähungen</label>
+                            <div class="intensity-scale">
+                                <button class="intensity-btn" onclick="setIntensity(this, 0)">0</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 1)">1</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 2)">2</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 3)">3</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 4)">4</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 5)">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="reaction-item">
+                            <label>Völlegefühl</label>
+                            <div class="intensity-scale">
+                                <button class="intensity-btn" onclick="setIntensity(this, 0)">0</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 1)">1</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 2)">2</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 3)">3</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 4)">4</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 5)">5</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group" style="margin-top: 15px;">
+                        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                            <input type="checkbox">
+                            <label>Kreislauf-Absacken</label>
+                        </div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                            <input type="checkbox">
+                            <label>Glühendes Gesicht</label>
+                        </div>
+                    </div>
+                    
+                    <div class="notes-area">
+                        <textarea placeholder="Notizen: Zeitverzögerung der Reaktion, Besonderheiten..." style="min-height: 50px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="meal-entry">
+                    <h3>Mittagessen</h3>
+                    <textarea placeholder="z.B. Reis mit Gemüse und Hähnchen"></textarea>
+                    
+                    <div class="reaction-grid">
+                        <div class="reaction-item">
+                            <label>Blähungen</label>
+                            <div class="intensity-scale">
+                                <button class="intensity-btn" onclick="setIntensity(this, 0)">0</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 1)">1</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 2)">2</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 3)">3</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 4)">4</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 5)">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="reaction-item">
+                            <label>Völlegefühl</label>
+                            <div class="intensity-scale">
+                                <button class="intensity-btn" onclick="setIntensity(this, 0)">0</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 1)">1</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 2)">2</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 3)">3</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 4)">4</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 5)">5</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group" style="margin-top: 15px;">
+                        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                            <input type="checkbox">
+                            <label>Kreislauf-Absacken</label>
+                        </div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                            <input type="checkbox">
+                            <label>Glühendes Gesicht</label>
+                        </div>
+                    </div>
+                    
+                    <div class="notes-area">
+                        <textarea placeholder="Notizen..." style="min-height: 50px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="meal-entry">
+                    <h3>Abendessen</h3>
+                    <textarea placeholder="z.B. Salat mit Feta und Oliven"></textarea>
+                    
+                    <div class="reaction-grid">
+                        <div class="reaction-item">
+                            <label>Blähungen</label>
+                            <div class="intensity-scale">
+                                <button class="intensity-btn" onclick="setIntensity(this, 0)">0</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 1)">1</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 2)">2</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 3)">3</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 4)">4</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 5)">5</button>
+                            </div>
+                        </div>
+                        
+                        <div class="reaction-item">
+                            <label>Völlegefühl</label>
+                            <div class="intensity-scale">
+                                <button class="intensity-btn" onclick="setIntensity(this, 0)">0</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 1)">1</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 2)">2</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 3)">3</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 4)">4</button>
+                                <button class="intensity-btn" onclick="setIntensity(this, 5)">5</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group" style="margin-top: 15px;">
+                        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                            <input type="checkbox">
+                            <label>Kreislauf-Absacken</label>
+                        </div>
+                        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                            <input type="checkbox">
+                            <label>Glühendes Gesicht</label>
+                        </div>
+                    </div>
+                    
+                    <div class="notes-area">
+                        <textarea placeholder="Notizen..." style="min-height: 50px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="meal-entry">
+                    <h3>Snacks</h3>
+                    <textarea placeholder="z.B. Apfel, Nüsse, Kaffee mit Milch"></textarea>
+                    <div class="notes-area">
+                        <textarea placeholder="Reaktionen auf Snacks..." style="min-height: 50px;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KÖRPERLICHE SYMPTOME -->
+            <div class="section">
+                <h2>🌡️ Körperliche Symptome</h2>
+                
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Hitzewallungen heute</label>
+                    <div class="counter">
+                        <button class="counter-btn" onclick="changeCounter(this, -1)">−</button>
+                        <span class="counter-value">0</span>
+                        <button class="counter-btn" onclick="changeCounter(this, 1)">+</button>
+                        <span style="margin-left: 10px;">Mal</span>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <label style="display: block; margin-bottom: 5px;">Durchschnittliche Intensität</label>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="0" class="slider" oninput="updateSliderValue(this)">
+                            <div class="slider-value">0/10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 10px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Nachtschweiß</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                            <input type="checkbox">
+                            <label>Ja</label>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <label style="display: block; margin-bottom: 5px;">Intensität (falls ja)</label>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="0" class="slider" oninput="updateSliderValue(this)">
+                            <div class="slider-value">0/10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STIMMUNG -->
+            <div class="section">
+                <h2>💭 Stimmung</h2>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Gut</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Energiegeladen</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Weinerlich</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Depressiv</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Gereizt</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GEIST -->
+            <div class="section">
+                <h2>🧠 Geist</h2>
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Vergesslich</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Brain Fog</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Entspannt</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Gestresst</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Konzentriert</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Unkonzentriert</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Motiviert</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCHLAF -->
+            <div class="section">
+                <h2>😴 Schlaf (letzte Nacht)</h2>
+                
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Schlafqualität gesamt</label>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="10" value="5" class="slider" oninput="updateSliderValue(this)">
+                        <div class="slider-value">5/10</div>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Unruhig</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Lebhafte Träume</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Schwitzen</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Einschlafprobleme</label>
+                    </div>
+                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                        <input type="checkbox">
+                        <label>Nachts wach</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTIZEN -->
+            <div class="section">
+                <h2>📝 Tagesnotizen</h2>
+                <textarea placeholder="Weitere Beobachtungen, Besonderheiten des Tages..." style="min-height: 100px;"></textarea>
+            </div>
+
+            <button class="save-btn" onclick="saveDay()">Tag speichern</button>
+        </div>
+
+        <!-- ANALYSE TAB (Platzhalter) -->
+        <div class="content" id="analysisTab" style="display: none;">
+            <div class="section">
+                <h2>📊 Analyse & Muster</h2>
+                <p style="padding: 40px; text-align: center; color: #666;">
+                    Hier werden später deine Muster und Korrelationen angezeigt:<br><br>
+                    • Lebensmittel-Reaktions-Übersicht<br>
+                    • Histamin-Tracker<br>
+                    • Symptom-Zusammenhänge<br>
+                    • Grafiken und Trends
+                </p>
+            </div>
+        </div>
+
+        <!-- EXPORT TAB (Platzhalter) -->
+        <div class="content" id="exportTab" style="display: none;">
+            <div class="section">
+                <h2>📤 Export für Arzt</h2>
+                <div style="background: white; padding: 20px; border-radius: 10px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Zeitraum wählen</label>
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <input type="date" style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        <span style="align-self: center;">bis</span>
+                        <input type="date" style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    </div>
+                    
+                    <div class="export-section">
+                        <button class="export-btn">📄 Als PDF exportieren</button>
+                        <button class="export-btn">📊 Als Excel exportieren</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INFO TAB -->
+        <div class="content" id="infoTab" style="display: none;">
+            <div class="section">
+                <h2>📚 Die 4 Phasen der Wechseljahre</h2>
+                <p style="margin-bottom: 20px; line-height: 1.6;">
+                    Die Wechseljahre sind ein natürlicher Prozess im Leben jeder Frau und dauern meist 10-15 Jahre. 
+                    Sie werden in vier Phasen eingeteilt, die jeweils unterschiedliche hormonelle Veränderungen und Symptome mit sich bringen.
+                </p>
+
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">1. Prämenopause (ab ca. 40 Jahren)</h3>
+                    <p style="line-height: 1.6; margin-bottom: 10px;">
+                        <strong>Dauer:</strong> Ca. 6-7 Jahre<br>
+                        <strong>Was passiert:</strong> Der Progesteronspiegel beginnt zu sinken, während Östrogen noch relativ stabil ist. 
+                        Die Eierstöcke arbeiten langsamer.
+                    </p>
+                    <p style="line-height: 1.6;"><strong>Typische Symptome:</strong></p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Unregelmäßiger Zyklus (mal kürzer, mal länger)</li>
+                        <li>Stärkere oder schwächere Blutungen</li>
+                        <li>Stimmungsschwankungen</li>
+                        <li>Schlafstörungen</li>
+                        <li>Brustspannen</li>
+                    </ul>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #764ba2; margin-bottom: 10px;">2. Perimenopause (ca. 47-52 Jahre)</h3>
+                    <p style="line-height: 1.6; margin-bottom: 10px;">
+                        <strong>Dauer:</strong> Ca. 4-8 Jahre (1-2 Jahre vor bis 1 Jahr nach letzter Periode)<br>
+                        <strong>Was passiert:</strong> Die intensivste Phase! Östrogen sinkt stark ab, Hormone schwanken extrem. 
+                        Dies ist die eigentliche "Wechsel"-Zeit.
+                    </p>
+                    <p style="line-height: 1.6;"><strong>Typische Symptome:</strong></p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Hitzewallungen und Nachtschweiß (häufigste Beschwerden!)</li>
+                        <li>Starke Zyklusunregelmäßigkeiten</li>
+                        <li>Schlafprobleme, Schwindel</li>
+                        <li>Herzrasen, Augenflimmern</li>
+                        <li>Stimmungsschwankungen, Reizbarkeit</li>
+                        <li>Konzentrationsprobleme, Brain Fog</li>
+                        <li>Gewichtszunahme, veränderte Fettverteilung</li>
+                        <li>Verdauungsprobleme (durch Hormonschwankungen!)</li>
+                    </ul>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">3. Menopause</h3>
+                    <p style="line-height: 1.6; margin-bottom: 10px;">
+                        <strong>Was ist das:</strong> Das ist KEIN Zeitraum, sondern ein einzelner Zeitpunkt – nämlich 12 Monate 
+                        nach deiner allerletzten Regelblutung. Man kann ihn nur rückblickend bestimmen.<br>
+                        <strong>Durchschnittsalter:</strong> 51-52 Jahre
+                    </p>
+                </div>
+
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #764ba2; margin-bottom: 10px;">4. Postmenopause</h3>
+                    <p style="line-height: 1.6; margin-bottom: 10px;">
+                        <strong>Dauer:</strong> 10-15 Jahre (bis zum Lebensende)<br>
+                        <strong>Was passiert:</strong> Der Hormonspiegel stabilisiert sich auf einem dauerhaft niedrigen Niveau. 
+                        Der Körper gewöhnt sich an die neue Situation.
+                    </p>
+                    <p style="line-height: 1.6;"><strong>Typische Symptome:</strong></p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Hitzewallungen lassen bei vielen nach (aber nicht bei allen!)</li>
+                        <li>Trockene Haut und Schleimhäute</li>
+                        <li>Osteoporose-Risiko steigt</li>
+                        <li>Erhöhtes Risiko für Herz-Kreislauf-Erkrankungen</li>
+                        <li>Gewichtsveränderungen</li>
+                    </ul>
+                </div>
+
+                <div style="background: #e8eaf6; padding: 20px; border-radius: 10px; border-left: 5px solid #667eea;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">💡 Wichtig zu wissen:</h3>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Etwa <strong>1/3 der Frauen</strong> hat keine oder kaum Beschwerden</li>
+                        <li><strong>1/3</strong> hat leichte Symptome</li>
+                        <li><strong>1/3</strong> leidet unter starken Beschwerden</li>
+                        <li>Die Wechseljahre sind <strong>keine Krankheit</strong>, sondern ein natürlicher Prozess</li>
+                        <li>Jede Frau erlebt die Wechseljahre anders</li>
+                        <li>Hormone wie Östrogen und Progesteron beeinflussen nicht nur den Zyklus, sondern auch: 
+                            Temperaturregulation, Verdauung, Schlaf, Stimmung, Gedächtnis, Herz-Kreislauf-System, Knochen und Haut</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fff3e0; padding: 20px; border-radius: 10px; border-left: 5px solid #ff9800; margin-top: 20px;">
+                    <h3 style="color: #ff9800; margin-bottom: 10px;">🍽️ Warum Verdauung in den Wechseljahren verrückt spielt:</h3>
+                    <p style="line-height: 1.6;">
+                        Östrogen beeinflusst die Darmflora, die Darmbewegung und die Produktion von Verdauungsenzymen. 
+                        Wenn der Östrogenspiegel sinkt oder schwankt, kann das zu Blähungen, Völlegefühl, Verstopfung oder 
+                        Durchfall führen. Außerdem kann eine Histaminintoleranz in den Wechseljahren häufiger auftreten, 
+                        da der Körper Histamin schlechter abbaut.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date
+        document.getElementById('dateInput').valueAsDate = new Date();
+
+        // Histamin-Datenbank
+        const histaminDatabase = {
+            high: ['tomaten', 'tomate', 'spinat', 'avocado', 'erdbeeren', 'erdbeere', 'banane', 'bananen', 
+                   'zitrusfrüchte', 'orange', 'orangen', 'zitrone', 'zitronen', 'ananas',
+                   'schokolade', 'kakao', 'nüsse', 'walnüsse', 'cashew', 'erdnüsse',
+                   'hartkäse', 'parmesan', 'emmentaler', 'gouda', 'käse',
+                   'salami', 'schinken', 'wurst', 'räucherfisch', 'thunfisch', 'makrele',
+                   'rotwein', 'bier', 'champagner', 'alkohol',
+                   'essig', 'balsamico', 'sauerkraut', 'kimchi',
+                   'hefe', 'sojasoße', 'soja', 'tofu'],
+            medium: ['paprika', 'aubergine', 'kürbis', 'oliven', 
+                     'pilze', 'champignons', 'steinpilze',
+                     'meeresfrüchte', 'garnelen', 'muscheln',
+                     'joghurt', 'buttermilch', 'kefir',
+                     'weizen', 'weizenprodukte'],
+            low: ['reis', 'kartoffeln', 'kartoffel', 'süßkartoffel',
+                  'hühnchen', 'hähnchen', 'pute', 'truthahn',
+                  'frischkäse', 'quark', 'butter',
+                  'äpfel', 'apfel', 'birne', 'birnen', 'melone',
+                  'karotten', 'karotte', 'möhre', 'möhren', 'gurke', 'gurken',
+                  'brokkoli', 'blumenkohl', 'zucchini',
+                  'haferflocken', 'hafer', 'quinoa', 'dinkel']
+        };
+
+        // Check for histamine in text
+        function checkHistamine(text) {
+            if (!text) return null;
+            const lowerText = text.toLowerCase();
+            
+            for (let food of histaminDatabase.high) {
+                if (lowerText.includes(food)) {
+                    return { level: 'high', food: food };
+                }
+            }
+            for (let food of histaminDatabase.medium) {
+                if (lowerText.includes(food)) {
+                    return { level: 'medium', food: food };
+                }
+            }
+            return null;
+        }
+
+        // Add histamine warnings to meal inputs
+        document.querySelectorAll('.meal-entry textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const histamineResult = checkHistamine(this.value);
+                
+                // Remove old warning
+                const oldWarning = this.parentElement.querySelector('.histamine-warning');
+                if (oldWarning) oldWarning.remove();
+                
+                if (histamineResult) {
+                    const warning = document.createElement('div');
+                    warning.className = 'histamine-warning';
+                    warning.style.cssText = `
+                        background: ${histamineResult.level === 'high' ? '#ffebee' : '#fff3e0'};
+                        border-left: 4px solid ${histamineResult.level === 'high' ? '#f44336' : '#ff9800'};
+                        padding: 12px;
+                        margin-top: 10px;
+                        border-radius: 5px;
+                        font-size: 0.9em;
+                    `;
+                    warning.innerHTML = `
+                        <strong>⚠️ Histamin-Hinweis:</strong> 
+                        "${histamineResult.food}" ist ${histamineResult.level === 'high' ? 'histaminreich' : 'moderat histaminhaltig'}
+                    `;
+                    this.parentElement.insertBefore(warning, this.nextSibling);
+                }
+            });
+        });
+
+        // Daily Reminder System
+        function setupReminders() {
+            if ('Notification' in window) {
+                if (Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
+            }
+        }
+
+        function scheduleReminder() {
+            const reminderTime = localStorage.getItem('reminderTime') || '20:00';
+            const now = new Date();
+            const [hours, minutes] = reminderTime.split(':');
+            const reminderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+            
+            if (reminderDate < now) {
+                reminderDate.setDate(reminderDate.getDate() + 1);
+            }
+            
+            const timeUntilReminder = reminderDate - now;
+            
+            setTimeout(() => {
+                if (Notification.permission === 'granted') {
+                    new Notification('Mean Meno Erinnerung', {
+                        body: 'Zeit für deine tägliche Eingabe! 🌸',
+                        icon: '🌸'
+                    });
+                }
+                scheduleReminder(); // Schedule next day
+            }, timeUntilReminder);
+        }
+
+        // Initialize reminder on page load
+        setupReminders();
+        scheduleReminder();
+
+        function setIntensity(btn, value) {
+            const buttons = btn.parentElement.querySelectorAll('.intensity-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function toggleCheckbox(item) {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            item.classList.toggle('checked', checkbox.checked);
+        }
+
+        function changeCounter(btn, delta) {
+            const valueSpan = btn.parentElement.querySelector('.counter-value');
+            let currentValue = parseInt(valueSpan.textContent);
+            currentValue = Math.max(0, currentValue + delta);
+            valueSpan.textContent = currentValue;
+        }
+
+        function updateSliderValue(slider) {
+            const valueDiv = slider.parentElement.querySelector('.slider-value');
+            valueDiv.textContent = slider.value + '/10';
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.getElementById('dailyTab').style.display = 'none';
+            document.getElementById('analysisTab').style.display = 'none';
+            document.getElementById('exportTab').style.display = 'none';
+            document.getElementById('infoTab').style.display = 'none';
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            if (tabName === 'daily') {
+                document.getElementById('dailyTab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else if (tabName === 'analysis') {
+                document.getElementById('analysisTab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            } else if (tabName === 'export') {
+                document.getElementById('exportTab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            } else if (tabName === 'info') {
+                document.getElementById('infoTab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            }
+        }
+
+        function saveDay() {
+            const currentDate = document.getElementById('dateInput').value;
+            alert('Tag gespeichert für ' + currentDate + '! (In der finalen Version werden die Daten in einer Datenbank gespeichert)');
+        }
+
+        function openReminderSettings() {
+            const currentTime = localStorage.getItem('reminderTime') || '20:00';
+            const newTime = prompt('Erinnerungszeit festlegen (Format: HH:MM)', currentTime);
+            if (newTime && /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(newTime)) {
+                localStorage.setItem('reminderTime', newTime);
+                alert('Erinnerung gespeichert für ' + newTime + ' Uhr');
+                scheduleReminder();
+            } else if (newTime) {
+                alert('Ungültiges Format. Bitte HH:MM verwenden (z.B. 20:00)');
+            }
+        }
+    </script>
+</body>
+</html>
